@@ -42,17 +42,12 @@ class UnimodalRegressorSequence(torch.nn.Module):
 								bidirectional=self.bidirectional,
 								batch_first=True)
 
-		#self.linear1 = torch.nn.Linear(self.rnn_layer_dim, opt.hidden_layer_dim)
-		#self.relu = torch.nn.ReLU()
 		self.dropout = torch.nn.Dropout(self.dropout_rate)
 		self.linear2 = torch.nn.Linear(opt.hidden_layer_dim, self.output_dim)
-		#self.activation = torch.nn.Sigmoid()
-		#self.activation = torch.nn.Hardtanh(min_val=0.0, max_val=1.0)
-
+	
 		# Model parameters
 		self.optim_params = []
 		self.optim_params += list(self.rnn.parameters())
-		#self.optim_params += list(self.linear1.parameters())
 		self.optim_params += list(self.linear2.parameters())
 
 	def forward_once(self, seq, length):
@@ -63,12 +58,9 @@ class UnimodalRegressorSequence(torch.nn.Module):
 		I = Variable(I.expand(seq.size(0), 1, self.rnn_layer_dim) - 1).cuda()
 
 		x = torch.gather(padded[0], 1, I).squeeze(1)
-		#x = self.linear1(x)
-		#x = self.relu(x)
 		x = self.dropout(x)
 		x = self.linear2(x)
-		#y = self.activation(x)
-
+	
 		return x
 
 	def forward(self, seq, length):
